@@ -13,8 +13,8 @@ export default async function handler(req, res) {
         // Format the Base64 string so Fal knows it is a JPEG
         const dataUri = `data:image/jpeg;base64,${imageBase64}`;
 
-        // Hitting the ultra-fast LTX model
-        const falResponse = await fetch("https://fal.run/fal-ai/ltx-2/image-to-video/fast", {
+        // Hitting the ultra-fast LTX model on Fal
+        const falResponse = await fetch("https://fal.run/fal-ai/ltx-video/image-to-video", {
             method: "POST",
             headers: {
                 "Authorization": `Key ${falKey}`,
@@ -22,11 +22,14 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 image_url: dataUri,
-                // Hardcoded prompt tailored for live wallpapers:
-                prompt: "Cinematic subtle motion, seamless loop, high quality, 4k resolution, beautiful lighting, highly detailed.",
-                duration: 6 // 6 seconds is the perfect length for a looping wallpaper
+                // THE MASTER PROMPT FOR ANIME WALLPAPERS:
+                prompt: "Cinematic anime live wallpaper. Extremely subtle breathing motion. Eyes blinking occasionally. Glowing red particles floating and swirling slowly in the foreground. Hair flowing gently in a soft breeze. The hand and weapon move slightly with her breathing. Camera is completely static. High quality, highly detailed masterpiece, perfect seamless loop.",
+                negative_prompt: "camera movement, zooming, panning, fast motion, melting weapon, deformed hands, morphing, changing shapes, bad anatomy",
+                // Keep the motion scale low so she doesn't mutate
+                motion_scale: 0.3, 
             })
         });
+
 
         if (!falResponse.ok) {
             const errorText = await falResponse.text();
