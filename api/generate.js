@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-    // Only allow POST requests from the Android app
+    // 1. Check if the request is a POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
@@ -11,24 +11,27 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'No image provided' });
         }
 
-        console.log("Received image from Android! Length:", imageBase64.length);
+        // 2. SECURELY LOAD YOUR API KEY
+        const hfToken = process.env.HUGGING_FACE_TOKEN;
+
+        // Safety check: If Vercel can't find the key, fail gracefully
+        if (!hfToken) {
+            console.error("CRITICAL: Hugging Face Token is missing in Vercel settings!");
+            return res.status(500).json({ error: 'Server configuration error' });
+        }
+
+        console.log("Image received! Token securely loaded. Ready to ping Hugging Face.");
 
         // ==========================================
-        // THE DUO DEVS FALLBACK LOOP WILL GO HERE
-        // ==========================================
-        // const hfToken = process.env.HUGGING_FACE_TOKEN;
-        // let videoUrl = await tryHuggingFace(imageBase64, hfToken);
-        // if (!videoUrl) videoUrl = await tryStability(imageBase64);
+        // NEXT UP: The actual fetch request to Hugging Face
         // ==========================================
 
-        // For today: We simulate a successful API generation to test the connection.
-        // We will send back a real sample MP4 link to make sure Android can play it.
+        // For now, we still return the dummy video while we set up the network
         const mockGeneratedVideo = "https://www.w3schools.com/html/mov_bbb.mp4";
 
-        // Send the success response back to the phone
         return res.status(200).json({
             success: true,
-            message: "Vercel successfully processed the image!",
+            message: "Vercel successfully securely loaded the token!",
             videoUrl: mockGeneratedVideo
         });
 
